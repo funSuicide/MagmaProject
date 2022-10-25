@@ -5,6 +5,38 @@
 #include <fstream>
 
 
+halfVector Magma::xOR(halfVector& src1, halfVector& src2) { //need testing
+	halfVector result;
+	for (int i = 0; i < 4; i++) {
+		result.bytes[i] = src1.bytes[i] ^ src2.bytes[i];
+	}
+	return result;
+}
+
+halfVector Magma::mod32(halfVector& src, halfVector& key) { //need testing
+	halfVector result;
+	unsigned int internal = 0;
+	for (int i = 3; i >= 0; i--)
+	{
+		internal = src.bytes[i] + src.bytes[i] + (internal >> 8);
+		result.bytes[i] = internal & 0xff;
+	}
+	return result;
+}
+
+halfVector Magma::transformationT(halfVector& src) { //need testing
+	halfVector result;
+	uint8_t leftHalfByte, rightHalfByte;
+	for (int i = 0; i < 4; i++) {
+		leftHalfByte = (src.bytes[i] & 0xf0) >> 4;
+		rightHalfByte = src.bytes[i] & 0x0f;
+		leftHalfByte = tTable[i * 2][leftHalfByte];
+		rightHalfByte = tTable[i * 2 + 1][rightHalfByte];
+		result[i] = (leftHalfByte << 4) | rightHalfByte;
+	}
+}
+
+/*
 std::vector<bool> Magma::decToBin(int value, size_t size) { //working
 	std::vector<bool> result(size);
 	for (int i = 0; value > 0; i++) {
@@ -13,6 +45,7 @@ std::vector<bool> Magma::decToBin(int value, size_t size) { //working
 	}
 	return result;
 }
+
 
 std::vector<bool> Magma::strToBin(std::string& src, size_t size) { //working
 	std::vector<bool> result(size);
@@ -28,14 +61,7 @@ std::vector<bool> Magma::strToBin(std::string& src, size_t size) { //working
 	return result;
 }
 
-void Magma::xOR(std::vector<bool>& src1, std::vector<bool>& src2) { //working
-	for (int i = 0; i < src1.size(); i++) {
-		if (src1[i] != src2[i]) {
-			src1[i] = 1;
-		}
-		else src1[i] = 0;
-	}
-}
+
 
 int Magma::binToDec(std::vector<bool>& src) { //working
 	int result = 0;
@@ -47,11 +73,6 @@ int Magma::binToDec(std::vector<bool>& src) { //working
 
 
 
-std::vector<bool> Magma::mod32(std::vector<bool>& src, std::vector<bool>& key) { //working
-	int a = binToDec(src);
-	int b = binToDec(key);
-	return decToBin((a + b) % 32, 32);
-}
 
 std::vector<std::string> Magma::expandKeys(std::string& key) { //working
 	std::vector<std::string> result;
@@ -70,35 +91,7 @@ std::vector<std::string> Magma::expandKeys(std::string& key) { //working
 	return result;
 }
 
-std::vector<bool> Magma::transformationT(std::vector<bool>& src) { //need test
-	std::vector<bool> result(32);
-	int start = 0;
-	int r = 0;
-	int end = 4;
-	int target = 0;
-	for (int i = 0; i < 8; i++) {
-		std::vector<bool> tmp(4);
-		for (int j = 0; j < 4; j++) {
-			tmp[j] = src[start];
-			start++;
-		}
-		int val = binToDec(tmp);
-		for (int q = 0; q < 16; q++) {
-			if (val == t_table[i][q]) {
-				target = q;
-				break;
-			}
-		}
-		std::vector<bool> prev = decToBin(target, 8);
-		int z = 0;
-		for (r; r < end; r++) {
-			result[r] = prev[4 + z];
-			z++;
-		}
-		end += 4;
-	}
-	return result;
-}
+
 
 std::pair<std::vector<bool>, std::vector<bool>> Magma::transformationG(std::pair<std::vector<bool>, std::vector<bool>>& src, std::vector<bool>& key) {
 	std::pair<std::vector<bool>, std::vector<bool>> result;
@@ -164,7 +157,6 @@ void Magma::encryptText() {
 		std::vector<bool> bitBlock = strToBin(block, 64);
 		std::vector<bool> bitChiperBlock = encryptBlock(bitBlock);
 		out << binToStr(bitChiperBlock);
-
 	}
 	out.close();
 	in.close();
@@ -183,3 +175,4 @@ void Magma::decryptText() {
 	}
 	in.close();
 }
+*/
