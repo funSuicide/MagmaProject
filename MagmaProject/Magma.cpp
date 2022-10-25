@@ -36,6 +36,42 @@ halfVector Magma::transformationT(halfVector& src) { //need testing
 	}
 }
 
+halfVector* Magma::expandKeys(uint8_t * key) { //need testing
+	halfVector* roundKeys = new halfVector[32];
+	int q = 0;
+	for (int i = 0; i < 3; i++) {
+		int step = 0;
+		for (int j = 0; j < 8; j++) {
+			memcpy(roundKeys[j+q].bytes, key + step, 4);
+			step += 4;
+		}
+		q += 8;
+	}
+	int step = 28;
+	for (int j = 24; j < 32; j++) {
+		memcpy(roundKeys[j].bytes, key + step, 4);
+		step -= 4;
+	}
+	return roundKeys;
+}
+
+halfVector Magma::gTransformation(halfVector& key, halfVector& half) { //need testing
+	halfVector result;
+	uint32_t byteVector;
+	halfVector tmp = xOR(key, half);
+	tmp = transformationT(tmp);
+	byteVector = tmp.bytes[0];
+	for (int i = 1; i < 4; i++) {
+		byteVector = (byteVector << 8) + tmp.bytes[i];
+	}
+	byteVector = (byteVector << 11) | (byteVector >> 21);
+	result.bytes[3] = byteVector;
+	result.bytes[2] = byteVector >> 8;
+	result.bytes[1] = byteVector >> 16;
+	result.bytes[0] = byteVector >> 24;
+	return result;
+}
+
 /*
 std::vector<bool> Magma::decToBin(int value, size_t size) { //working
 	std::vector<bool> result(size);

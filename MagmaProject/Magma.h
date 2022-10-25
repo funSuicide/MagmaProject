@@ -23,23 +23,23 @@ class Magma {
 		{ 12,4,6,2,10,5,11,9,14,8,13,7,0,3,15,1 }
 	};
 
-
-	std::string key; 
+	uint8_t* key = new uint8_t[32];
 	std::string path1; 
 	std::string path2; 
 public:
+	/*
 	Magma(std::string& key, std::string& path1, std::string& path2) { 
 		this->key = key;
 		this->path1 = path1;
 		this->path2 = path2;
-	};
+	};*/
 
 	halfVector xOR(halfVector& src1, halfVector& src2); //function for xor 
 	halfVector mod32(halfVector& src, halfVector& key); //function for mod32
 	halfVector transformationT(halfVector& src); //function for T-transformation
+	halfVector* expandKeys(uint8_t* key); //function for expanding keys
+	halfVector gTransformation(halfVector& key, halfVector& half); //function for g-transformation
 
-
-	std::vector<std::string> expandKeys(std::string& key); //need remake
 	std::pair<std::vector<bool>, std::vector<bool>> transformationG(std::pair<std::vector<bool>, std::vector<bool>>& src, std::vector<bool>& key); //need remake
 
 
