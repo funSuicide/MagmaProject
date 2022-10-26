@@ -5,7 +5,7 @@
 #include <fstream>
 
 
-halfVector Magma::xOR(halfVector& src1, halfVector& src2) { //need testing
+halfVector Magma::xOR(halfVector& src1, halfVector& src2) { //good
 	halfVector result;
 	for (int i = 0; i < 4; i++) {
 		result.bytes[i] = src1.bytes[i] ^ src2.bytes[i];
@@ -13,18 +13,18 @@ halfVector Magma::xOR(halfVector& src1, halfVector& src2) { //need testing
 	return result;
 }
 
-halfVector Magma::mod32(halfVector& src, halfVector& key) { //need testing
+halfVector Magma::mod32(halfVector& src, halfVector& key) { //good
 	halfVector result;
 	unsigned int internal = 0;
 	for (int i = 3; i >= 0; i--)
 	{
-		internal = src.bytes[i] + src.bytes[i] + (internal >> 8);
+		internal = src.bytes[i] + key.bytes[i] + (internal >> 8);
 		result.bytes[i] = internal & 0xff;
 	}
 	return result;
 }
 
-halfVector Magma::transformationT(halfVector& src) { //need testing
+halfVector Magma::transformationT(halfVector& src) { //good
 	halfVector result;
 	uint8_t leftHalfByte, rightHalfByte;
 	for (int i = 0; i < 4; i++) {
@@ -59,7 +59,7 @@ halfVector* Magma::expandKeys() { //need testing
 halfVector Magma::gTransformation(halfVector& key, halfVector& half) { //need testing
 	halfVector result;
 	uint32_t byteVector;
-	halfVector tmp = xOR(key, half);
+	halfVector tmp = mod32(half, key);
 	tmp = transformationT(tmp);
 	byteVector = tmp.bytes[0];
 	for (int i = 1; i < 4; i++) {
@@ -112,17 +112,17 @@ byteVector Magma::decryptBlock(byteVector& src) { //need testing
 
 
 void Magma::encryptText() {
-	std::ifstream in(path1);
-	std::ofstream out(path2, std::ios::app);
-	char tmp[8];
+	std::ifstream in(path1, std::ios::binary);
+	std::ofstream out(path2, std::ios::app, std::ios::binary);
+	char* tmp = new char[8];
 	while (in.read(tmp, 8)) {
 		halfVector left;
 		halfVector right;
 		for (int i = 0; i < 4; i++) {
 			left.bytes[i] = tmp[i];
 		}
-		for (int i = 4; i < 8; i++) {
-			right.bytes[i-4] = tmp[i];
+		for (int j = 4; j < 8; j++) {
+			right.bytes[j-4] = tmp[j];
 		}
 		byteVector block;
 		block.left = left;
@@ -137,7 +137,7 @@ void Magma::encryptText() {
 
 void Magma::decryptText() {
 	std::ifstream in(path1);
-	std::ofstream out(path2, std::ios::app);
+	std::ofstream out(path2, std::ios::app, std::ios::binary);
 	char tmp[8];
 	while (in.read(tmp, 8)) {
 		halfVector left;
