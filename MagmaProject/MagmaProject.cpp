@@ -8,9 +8,8 @@
 
 int main()
 {
-	/*
 	std::string key = "aqwvbhgtyfdvcxztruj,lokjgtrxsqqw";
-	std::string path1 = "test2.txt";
+	std::string path1 = "test.txt";
 	std::string path2 = "out_2.txt";
 	std::string path3 = "out2_2.txt";
 
@@ -27,7 +26,6 @@ int main()
 	auto end2 = std::chrono::steady_clock::now();
 	std::chrono::duration<double, std::milli> elapsed2 = end2 - start2;
 	std::cout << "timeWork: " << elapsed2.count() << std::endl;
-	*/
 }
 
 

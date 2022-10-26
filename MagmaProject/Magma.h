@@ -7,7 +7,7 @@ union halfVector { //half 4 byte vector
 	uint8_t bytes[sizeof(uint32_t)]; //bytes
 };
 
-union byteVector { //8 byte vector
+struct byteVector { //8 byte vector
 	halfVector left, right; //right and left halfs of 8 byte vector
 };
 
@@ -27,29 +27,25 @@ class Magma {
 	std::string path1; 
 	std::string path2; 
 public:
-	/*
 	Magma(std::string& key, std::string& path1, std::string& path2) { 
-		this->key = key;
+		for (int i = 0; i < key.length(); i++) {
+			this->key[i] = uint8_t(key[i]);
+		}
 		this->path1 = path1;
 		this->path2 = path2;
-	};*/
+	};
 
 	halfVector xOR(halfVector& src1, halfVector& src2); //function for xor 
 	halfVector mod32(halfVector& src, halfVector& key); //function for mod32
 	halfVector transformationT(halfVector& src); //function for T-transformation
-	halfVector* expandKeys(uint8_t* key); //function for expanding keys
+	halfVector* expandKeys(); //function for expanding keys
 	halfVector gTransformation(halfVector& key, halfVector& half); //function for g-transformation
+	byteVector transformationG(byteVector& src, halfVector& key); //function for G-transformation
 
-	std::pair<std::vector<bool>, std::vector<bool>> transformationG(std::pair<std::vector<bool>, std::vector<bool>>& src, std::vector<bool>& key); //need remake
+	
+	byteVector encryptBlock(byteVector&src); //function for encrypt one block
+	byteVector decryptBlock(byteVector& src); //function for decrypt one block
 
-
-
-	std::vector<bool> decToBin(int value, size_t size); //need remake
-	std::vector<bool> strToBin(std::string& src, size_t size); //need remake
-	int binToDec(std::vector<bool>& src); //need remake
-	std::vector<bool> encryptBlock(std::vector<bool>& block); //need remake
-	std::string binToStr(std::vector<bool>& src);  //need remake
-	std::vector<bool> decryptBlock(std::vector<bool>& src); //need remake
 	void encryptText(); //need remake
 	void decryptText(); //need remake
 };
