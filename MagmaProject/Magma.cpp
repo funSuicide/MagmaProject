@@ -113,7 +113,7 @@ byteVector Magma::decryptBlock(byteVector& src) { //need testing
 
 void Magma::encryptText() {
 	std::ifstream in(path1, std::ios::binary);
-	std::ofstream out(path2, std::ios::app, std::ios::binary);
+	std::ofstream out(path2, std::ios::binary);
 	char* tmp = new char[8];
 	while (in.read(tmp, 8)) {
 		halfVector left;
@@ -136,17 +136,17 @@ void Magma::encryptText() {
 }
 
 void Magma::decryptText() {
-	std::ifstream in(path1);
-	std::ofstream out(path2, std::ios::app, std::ios::binary);
-	char tmp[8];
+	std::ifstream in(path1, std::ios::binary);
+	std::ofstream out(path2, std::ios::binary);
+	char* tmp = new char[8];
 	while (in.read(tmp, 8)) {
 		halfVector left;
 		halfVector right;
 		for (int i = 0; i < 4; i++) {
 			left.bytes[i] = tmp[i];
 		}
-		for (int i = 4; i < 8; i++) {
-			right.bytes[i - 4] = tmp[i];
+		for (int j = 4; j < 8; j++) {
+			right.bytes[j - 4] = tmp[j];
 		}
 		byteVector block;
 		block.left = left;
