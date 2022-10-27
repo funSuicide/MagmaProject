@@ -31,6 +31,7 @@ class Magma {
 	0x44, 0x55, 0x66, 0x77,
 	0x88, 0x99, 0xaa, 0xbb,
 	0xcc, 0xdd, 0xee, 0xff };
+
 	std::string path1; 
 	std::string path2; 
 public:
@@ -41,6 +42,7 @@ public:
 		//while (in.get(tmp)) {
 		//	this->key1[i] = uint8_t(tmp);
 		//	i++;
+		// in.close();
 		//}
 		this->path1 = path1;
 		this->path2 = path2;
@@ -54,8 +56,8 @@ public:
 	byteVector transformationG(byteVector& src, halfVector& key); //function for G-transformation
 
 	
-	byteVector encryptBlock(byteVector&src); //function for encrypt one block
-	byteVector decryptBlock(byteVector& src); //function for decrypt one block
+	byteVector encryptBlock(byteVector&src, halfVector*roundKeys); //function for encrypt one block
+	byteVector decryptBlock(byteVector& src, halfVector* roundKeys); //function for decrypt one block
 
 	void encryptText(); //need remake
 	void decryptText(); //need remake

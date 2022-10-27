@@ -5,7 +5,7 @@
 #include <fstream>
 
 
-halfVector Magma::xOR(halfVector& src1, halfVector& src2) { //++
+halfVector Magma::xOR(halfVector& src1, halfVector& src2) { 
 	halfVector result;
 	for (int i = 0; i < 4; i++) {
 		result.bytes[i] = src1.bytes[i] ^ src2.bytes[i];
@@ -13,7 +13,7 @@ halfVector Magma::xOR(halfVector& src1, halfVector& src2) { //++
 	return result;
 }
 
-halfVector Magma::mod32(halfVector& src, halfVector& key) { //+++
+halfVector Magma::mod32(halfVector& src, halfVector& key) { 
 	halfVector result;
 	unsigned int internal = 0;
 	for (int i = 0; i < 4; i++)
@@ -24,7 +24,7 @@ halfVector Magma::mod32(halfVector& src, halfVector& key) { //+++
 	return result;
 }
 
-halfVector Magma::transformationT(halfVector& src) { //+++
+halfVector Magma::transformationT(halfVector& src) { 
 	halfVector result;
 	uint8_t leftHalfByte, rightHalfByte;
 	for (int i = 0; i < 4; i++) {
@@ -37,7 +37,7 @@ halfVector Magma::transformationT(halfVector& src) { //+++
 	return result;
 }
 
-halfVector* Magma::expandKeys() { //+++
+halfVector* Magma::expandKeys() { 
 	halfVector* roundKeys = new halfVector[32];
 	int q = 0;
 	for (int i = 0; i < 3; i++) {
@@ -56,7 +56,7 @@ halfVector* Magma::expandKeys() { //+++
 	return roundKeys;
 }
 
-halfVector Magma::gTransformation(halfVector& key, halfVector& half) { //need testing
+halfVector Magma::gTransformation(halfVector& key, halfVector& half) { 
 	halfVector result;
 	uint32_t byteVector;
 	halfVector tmp = mod32(half, key);
@@ -73,7 +73,7 @@ halfVector Magma::gTransformation(halfVector& key, halfVector& half) { //need te
 	return result;
 }
 
-byteVector Magma::transformationG(byteVector& src, halfVector& key) { //need testing
+byteVector Magma::transformationG(byteVector& src, halfVector& key) {
 	halfVector l = src.left;
 	halfVector r = src.right;
 	byteVector result;
@@ -84,8 +84,7 @@ byteVector Magma::transformationG(byteVector& src, halfVector& key) { //need tes
 	return result;
 }
 
-byteVector Magma::encryptBlock(byteVector& src) { //need testing
-	halfVector* roundKeys = expandKeys();
+byteVector Magma::encryptBlock(byteVector& src, halfVector* roundKeys) { 
 	byteVector tmp = src;
 	byteVector result;
 	for (int i = 0; i < 31; i++) {
@@ -100,8 +99,7 @@ byteVector Magma::encryptBlock(byteVector& src) { //need testing
 	return result;
 }
 
-byteVector Magma::decryptBlock(byteVector& src) { //need testing
-	halfVector* roundKeys = expandKeys();
+byteVector Magma::decryptBlock(byteVector& src, halfVector* roundKeys) { 
 	byteVector tmp = src;
 	byteVector result;
 	for (int i = 31; i > 0; i--) {
@@ -118,6 +116,7 @@ byteVector Magma::decryptBlock(byteVector& src) { //need testing
 
 
 void Magma::encryptText() {
+	halfVector* roundKeys = expandKeys();
 	std::ifstream in(path1, std::ios::binary);
 	std::ofstream out(path2, std::ios::binary);
 	char* tmp = new char[8];
@@ -133,7 +132,7 @@ void Magma::encryptText() {
 		byteVector block;
 		block.left = left;
 		block.right = right;
-		byteVector chiperBlock = encryptBlock(block);
+		byteVector chiperBlock = encryptBlock(block, roundKeys);
 		out.write((const char*)chiperBlock.left.bytes, 4);
 		out.write((const char*)chiperBlock.right.bytes, 4);
 	}
@@ -142,6 +141,7 @@ void Magma::encryptText() {
 }
 
 void Magma::decryptText() {
+	halfVector* roundKeys = expandKeys();
 	std::ifstream in(path1, std::ios::binary);
 	std::ofstream out(path2, std::ios::binary);
 	char* tmp = new char[8];
@@ -157,7 +157,7 @@ void Magma::decryptText() {
 		byteVector block;
 		block.left = left;
 		block.right = right;
-		byteVector chiperBlock = decryptBlock(block);
+		byteVector chiperBlock = decryptBlock(block, roundKeys);
 		out.write((const char*)chiperBlock.left.bytes, 4);
 		out.write((const char*)chiperBlock.right.bytes, 4);
 	}

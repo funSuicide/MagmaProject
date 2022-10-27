@@ -29,24 +29,26 @@ int main()
 	std::cout << "timeWork: " << elapsed2.count() << std::endl; 
 
 
+	
 
 	/*
 	uint8_t text[8]= { 0x10, 0x32, 0x54, 0x76, 0x98, 0xba, 0xdc, 0xfe };
+	std::cout << "Test-example:" << std:: endl;
 	for (int i = 0; i < 8; i++) {
 		printf("%02x", text[i]);
 	}
 	std::cout << std::endl;
 	uint8_t ex[8] = { 0x3d, 0xca, 0xd8, 0xc2, 0xe5, 0x01, 0xe9, 0x4e };
-	std::cout << "MEGA KRUTOY PRIMER SUKA:" << std::endl;
+	std::cout << "Example chiper-text:" << std::endl;
 	for (int i = 0; i < 8; i++) {
-		printf("%u ", ex[i]);
+		printf("%02x", ex[i]);
 	}
 	std::cout << std::endl;
 
 	Magma C(key, path1, path2);
 	halfVector left;
 	halfVector right;
-
+	halfVector* rk = C.expandKeys();
 	byteVector res;
 	byteVector res2;
 	for (int i = 0; i < 4; i++) {
@@ -57,37 +59,25 @@ int main()
 	}
 	res.left = left;
 	res.right = right;
-	res2 = C.encryptBlock(res);
+	res2 = C.encryptBlock(res, rk);
 
 	byteVector s3;
-	s3 = C.decryptBlock(res2);
-	int c = 0;
+	s3 = C.decryptBlock(res2, rk);
+	std::cout << "Chiper-text:" << std::endl;
 	for (int i = 0; i < 4; i++) {
-		if (ex[i] == res2.left.bytes[i]) {
-			c++;
-		}
-		printf("%u ", res2.left.bytes[i]);
+		printf("%02x", res2.left.bytes[i]);
 	}
 	for (int i = 4; i < 8; i++) {
-		if (ex[i] == res2.right.bytes[i-4]) {
-			c++;
-		}
-		printf("%u ", res2.right.bytes[i-4]);
+		printf("%02x", res2.right.bytes[i-4]);
 	}
 
 	std::cout << std::endl;
-	int d = 0;
+	std::cout << "Text:" << std::endl;
 	for (int i = 0; i < 4; i++) {
-		if (text[i] == s3.left.bytes[i]) {
-			d++;
-		}
-		printf("%u ", s3.left.bytes[i]);
+		printf("%02x", s3.left.bytes[i]);
 	}
 	for (int i = 4; i < 8; i++) {
-		if (text[i] == s3.right.bytes[i - 4]) {
-			d++;
-		}
-		printf("%u ", s3.right.bytes[i-4]);
+		printf("%02x", s3.right.bytes[i-4]);
 	}
 	std::cout << std::endl;
 	*/
