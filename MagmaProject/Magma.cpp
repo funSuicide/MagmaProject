@@ -4,25 +4,23 @@
 #include <algorithm>
 #include <fstream>
 
+Magma::Magma(uint8_t* key) {
+	memcpy(this->key, key, 32);
+	roundKeys = expandKeys();
+}
 
 halfVector Magma::xOR(halfVector& src1, halfVector& src2) { 
 	halfVector result;
-	for (int i = 0; i < 4; i++) {
-		result.bytes[i] = src1.bytes[i] ^ src2.bytes[i];
-	}
+	result.vector = src1.vector ^ src2.vector;
 	return result;
 }
 
 halfVector Magma::mod32(halfVector& src, halfVector& key) { 
 	halfVector result;
-	unsigned int internal = 0;
-	for (int i = 0; i < 4; i++)
-	{
-		internal = src.bytes[i] + key.bytes[i] + (internal >> 8);
-		result.bytes[i] = internal & 0xff;
-	}
+	result.vector = src.vector + key.vector;
 	return result;
 }
+
 
 halfVector Magma::transformationT(halfVector& src) { 
 	halfVector result;
@@ -114,53 +112,36 @@ byteVector Magma::decryptBlock(byteVector& src, halfVector* roundKeys) {
 	return result;
 }
 
-
-void Magma::encryptText() {
-	halfVector* roundKeys = expandKeys();
-	std::ifstream in(path1, std::ios::binary);
-	std::ofstream out(path2, std::ios::binary);
-	char* tmp = new char[8];
-	while (in.read(tmp, 8)) {
+uint8_t* Magma::encryptText(uint8_t* data) {
+	uint8_t* result = new uint8_t[1048576];
+	for (size_t i = 0; i < 1048576-8; i+=8){
 		halfVector left;
 		halfVector right;
-		for (int i = 0; i < 4; i++) {
-			left.bytes[i] = tmp[i];
-		}
-		for (int j = 4; j < 8; j++) {
-			right.bytes[j-4] = tmp[j];
-		}
+		memcpy(left.bytes, data + i, 4);
+		memcpy(right.bytes, data + 4 + i, 4);
 		byteVector block;
 		block.left = left;
 		block.right = right;
 		byteVector chiperBlock = encryptBlock(block, roundKeys);
-		out.write((const char*)chiperBlock.left.bytes, 4);
-		out.write((const char*)chiperBlock.right.bytes, 4);
+		memcpy(result + i, chiperBlock.left.bytes, 4);
+		memcpy(result + 4  + i, chiperBlock.right.bytes, 4);
 	}
-	out.close();
-	in.close();
+	return result;
 }
 
-void Magma::decryptText() {
-	halfVector* roundKeys = expandKeys();
-	std::ifstream in(path1, std::ios::binary);
-	std::ofstream out(path2, std::ios::binary);
-	char* tmp = new char[8];
-	while (in.read(tmp, 8)) {
+uint8_t* Magma::decryptText(uint8_t* data) {
+	uint8_t* result = new uint8_t[1048576];
+	for (size_t i = 0; i < 1048576-8; i +=8) {
 		halfVector left;
 		halfVector right;
-		for (int i = 0; i < 4; i++) {
-			left.bytes[i] = tmp[i];
-		}
-		for (int j = 4; j < 8; j++) {
-			right.bytes[j - 4] = tmp[j];
-		}
+		memcpy(left.bytes, data + i, 4);
+		memcpy(right.bytes, data + 4 + i, 4);
 		byteVector block;
 		block.left = left;
 		block.right = right;
-		byteVector chiperBlock = decryptBlock(block, roundKeys);
-		out.write((const char*)chiperBlock.left.bytes, 4);
-		out.write((const char*)chiperBlock.right.bytes, 4);
+		byteVector dechiperBlock = decryptBlock(block, roundKeys);
+		memcpy(result + i, dechiperBlock.left.bytes, 4);
+		memcpy(result + 4 + i, dechiperBlock.right.bytes, 4);
 	}
-	out.close();
-	in.close();
+	return result;
 }

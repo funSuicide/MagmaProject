@@ -6,6 +6,7 @@
 
 union halfVector { //half 4 byte vector
 	uint8_t bytes[sizeof(uint32_t)]; //bytes
+	uint32_t vector;
 };
 
 struct byteVector { //8 byte vector
@@ -13,7 +14,7 @@ struct byteVector { //8 byte vector
 };
 
 class Magma {
-	unsigned int tTable[8][16] = { //table for T-transformation
+	static constexpr unsigned int tTable[8][16] = { //table for T-transformation
 			{ 12,4,6,2,10,5,11,9,14,8,13,7,0,3,15,1 },
 			{ 6,8,2,3,9,10,5,12,1,14,4,7,11,13,0,15 },
 			{ 11,3,5,8,2,15,10,13,14,1,7,4,12,9,6,0 },
@@ -23,35 +24,15 @@ class Magma {
 			{ 8,14,2,5,6,9,1,12,15,4,11,0,13,10,3,7 },
 			{ 1,7,14,13,0,5,8,3,4,15,10,6,9,12,11,2 }
 	};
-	uint8_t key[32] = { 0xff, 0xfe, 0xfd, 0xfc,
-	0xfb, 0xfa, 0xf9, 0xf8,
-	0xf7, 0xf6, 0xf5, 0xf4,
-	0xf3, 0xf2, 0xf1, 0xf0,
-	0x00, 0x11, 0x22, 0x33,
-	0x44, 0x55, 0x66, 0x77,
-	0x88, 0x99, 0xaa, 0xbb,
-	0xcc, 0xdd, 0xee, 0xff };
-
-	std::string path1; 
-	std::string path2; 
+	uint8_t key[32];
+	halfVector* roundKeys;
 public:
-	Magma(std::string& key, std::string& path1, std::string& path2) { 
-		//std::ifstream in(path1, std::ios::binary);
-		//char tmp;
-		//int i = 0;
-		//while (in.get(tmp)) {
-		//	this->key1[i] = uint8_t(tmp);
-		//	i++;
-		// in.close();
-		//}
-		this->path1 = path1;
-		this->path2 = path2;
-	};
-
+	Magma(uint8_t* key);
+	halfVector* expandKeys(); //function for expanding keys
 	halfVector xOR(halfVector& src1, halfVector& src2); //function for xor 
 	halfVector mod32(halfVector& src, halfVector& key); //function for mod32
 	halfVector transformationT(halfVector& src); //function for T-transformation
-	halfVector* expandKeys(); //function for expanding keys
+	
 	halfVector gTransformation(halfVector& key, halfVector& half); //function for g-transformation
 	byteVector transformationG(byteVector& src, halfVector& key); //function for G-transformation
 
@@ -59,6 +40,6 @@ public:
 	byteVector encryptBlock(byteVector&src, halfVector*roundKeys); //function for encrypt one block
 	byteVector decryptBlock(byteVector& src, halfVector* roundKeys); //function for decrypt one block
 
-	void encryptText(); //need remake
-	void decryptText(); //need remake
+	uint8_t* encryptText(uint8_t* data); //need remake
+	uint8_t* decryptText(uint8_t* data); //need remake
 };

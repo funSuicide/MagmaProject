@@ -5,6 +5,7 @@
 #include <string>
 #include "Magma.h"
 #include <chrono>
+#include "Encryptor.h"
 
 int main()
 {
@@ -13,17 +14,16 @@ int main()
 	std::string path2 = "out_2.txt";
 	std::string path3 = "out2_2.txt";
 	
-	
-	Magma C(key, path1, path2);
+	Encryptor C(path1, path2, key);
 	auto start = std::chrono::steady_clock::now();
-	C.encryptText();
+	C.encrypt();
 	auto end = std::chrono::steady_clock::now();
 	std::chrono::duration<double, std::milli> elapsed = end - start;
 	std::cout << "timeWork: " << elapsed.count() << std::endl;
 	
-	Magma D(key, path2, path3);
+	Encryptor D(path2, path3, key);
 	auto start2 = std::chrono::steady_clock::now();
-	D.decryptText();
+	D.decrypt();
 	auto end2 = std::chrono::steady_clock::now();
 	std::chrono::duration<double, std::milli> elapsed2 = end2 - start2;
 	std::cout << "timeWork: " << elapsed2.count() << std::endl; 

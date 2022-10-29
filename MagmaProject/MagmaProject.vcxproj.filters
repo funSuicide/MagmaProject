@@ -21,9 +21,15 @@
     <ClCompile Include="Magma.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Encryptor.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Magma.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Encryptor.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
