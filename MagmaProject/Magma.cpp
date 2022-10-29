@@ -3,6 +3,7 @@
 #include <cmath>
 #include <algorithm>
 #include <fstream>
+#include <omp.h>
 
 Magma::Magma(uint8_t* key) {
 	memcpy(this->key, key, 32);
@@ -114,7 +115,8 @@ byteVector Magma::decryptBlock(byteVector& src, halfVector* roundKeys) {
 
 uint8_t* Magma::encryptText(uint8_t* data) {
 	uint8_t* result = new uint8_t[1048576];
-	for (size_t i = 0; i < 1048576-8; i+=8){
+	#pragma omp parallel for num_threads(8)
+	for (int i = 0; i < 1048576-8; i+=8){
 		halfVector left;
 		halfVector right;
 		memcpy(left.bytes, data + i, 4);
@@ -131,7 +133,8 @@ uint8_t* Magma::encryptText(uint8_t* data) {
 
 uint8_t* Magma::decryptText(uint8_t* data) {
 	uint8_t* result = new uint8_t[1048576];
-	for (size_t i = 0; i < 1048576-8; i +=8) {
+	#pragma omp parallel for num_threads(8)
+	for (int i = 0; i < 1048576-8; i +=8) {
 		halfVector left;
 		halfVector right;
 		memcpy(left.bytes, data + i, 4);
