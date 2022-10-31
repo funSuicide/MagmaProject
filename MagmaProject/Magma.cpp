@@ -52,7 +52,6 @@ void Magma::expandKeys(halfVector* dest) {
 
 halfVector Magma::gTransformation(halfVector& key, halfVector& half) { 
 	uint32_t byteVector;
-	uint32_t result;
 	halfVector tmp = mod32(half, key);
 	tmp = transformationT(tmp);
 	byteVector = tmp.bytes[3];
@@ -60,11 +59,7 @@ halfVector Magma::gTransformation(halfVector& key, halfVector& half) {
 		byteVector = (byteVector << 8) + tmp.bytes[i];
 	}
 	byteVector = (byteVector << 11) | (byteVector >> 21);
-	result = byteVector;
-	result = byteVector >> 8;
-	result = byteVector >> 16;
-	result = byteVector >> 24;
-	return halfVector(result);
+	return halfVector(byteVector);
 }
 
 byteVector Magma::transformationG(byteVector& src, halfVector& key) {
@@ -99,9 +94,9 @@ byteVector Magma::decryptBlock(byteVector& src) {
 	return byteVector(l, tmp2);
 }
 
-void Magma::encryptText(uint8_t* data, char* dest) {
+void Magma::encryptText(uint8_t* data, char* dest, int size) {
 	#pragma omp parallel for num_threads(8)
-	for (int i = 0; i < 1048576-8; i+=8){
+	for (int i = 0; i < size; i+=8){
 		halfVector left;
 		halfVector right;
 		memcpy(left.bytes, data + i, 4);
@@ -115,9 +110,9 @@ void Magma::encryptText(uint8_t* data, char* dest) {
 	}
 }
 
-void Magma::decryptText(uint8_t* data, char* dest) {
+void Magma::decryptText(uint8_t* data, char* dest, int size) {
 	#pragma omp parallel for num_threads(8)
-	for (int i = 0; i < 1048576-8; i +=8) {
+	for (int i = 0; i < size; i +=8) {
 		halfVector left;
 		halfVector right;
 		memcpy(left.bytes, data + i, 4);

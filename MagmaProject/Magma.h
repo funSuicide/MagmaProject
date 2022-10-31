@@ -53,6 +53,6 @@ public:
 	byteVector encryptBlock(byteVector&src); //function for encrypt one block
 	byteVector decryptBlock(byteVector& src); //function for decrypt one block
 
-	void encryptText(uint8_t* data, char* dest); //need remake
-	void decryptText(uint8_t* data, char* dest); //need remake
+	void encryptText(uint8_t* data, char* dest, int size); //need remake
+	void decryptText(uint8_t* data, char* dest, int size); //need remake
 };

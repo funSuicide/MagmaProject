@@ -1,7 +1,6 @@
 #include "Encryptor.h"
 #include "Magma.h"
 #include <fstream>
-#define MEGABYTE  1048576;
 
 Encryptor::Encryptor(std::string& pathOne, std::string& pathTwo, std::string& pathKey) {
 	this->pathOne = pathOne;
@@ -20,15 +19,15 @@ void Encryptor::encrypt() const {
 	inEnd.seekg(0, std::ios::end);
 	size_t sizeFile = inEnd.tellg();
 	inEnd.close();
-	size_t countMegabytes = sizeFile / MEGABYTE;
+	size_t countMegabytes = sizeFile / megabyte;
 	std::ifstream in(pathOne, std::ios::binary);
 	std::ofstream out(pathTwo, std::ios::binary);
 	for (size_t i = 0; i < countMegabytes; i++) {
-		char* tmp = new char[1048576];
-		in.read(tmp, 1048576);
+		char* tmp = new char[megabyte];
+		in.read(tmp, megabyte);
 		uint8_t* tmp2 = (uint8_t*)tmp;
-		C.encryptText(tmp2, tmp);
-		out.write((const char*)tmp, 1048576);
+		C.encryptText(tmp2, tmp, megabyte - 8);
+		out.write((const char*)tmp, megabyte);
 		delete[] tmp;
 	}
 	in.close();
@@ -47,15 +46,15 @@ void Encryptor::decrypt() const {
 	inEnd.seekg(0, std::ios::end);
 	size_t sizeFile = inEnd.tellg();
 	inEnd.close();
-	size_t countMegabytes = sizeFile / MEGABYTE;
+	size_t countMegabytes = sizeFile / megabyte;
 	std::ifstream in(pathOne, std::ios::binary);
 	std::ofstream out(pathTwo, std::ios::binary);
 	for (size_t i = 0; i < countMegabytes; i++) {
-		char* tmp = new char[1048576];
-		in.read(tmp, 1048576);
+		char* tmp = new char[megabyte];
+		in.read(tmp, megabyte);
 		uint8_t* tmp2 = (uint8_t*)tmp;
-		D.decryptText(tmp2, tmp);
-		out.write((const char*)tmp, 1048576);
+		D.decryptText(tmp2, tmp, megabyte-8);
+		out.write((const char*)tmp, megabyte);
 		delete[] tmp;
 	}
 	in.close();
