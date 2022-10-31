@@ -27,8 +27,8 @@ void Encryptor::encrypt() const {
 		char* tmp = new char[1048576];
 		in.read(tmp, 1048576);
 		uint8_t* tmp2 = (uint8_t*)tmp;
-		uint8_t* result = C.encryptText(tmp2);
-		out.write((const char*)result, 1048576);
+		C.encryptText(tmp2, tmp);
+		out.write((const char*)tmp, 1048576);
 		delete[] tmp;
 	}
 	in.close();
@@ -54,8 +54,8 @@ void Encryptor::decrypt() const {
 		char* tmp = new char[1048576];
 		in.read(tmp, 1048576);
 		uint8_t* tmp2 = (uint8_t*)tmp;
-		uint8_t* result = D.decryptText(tmp2);
-		out.write((const char*)result, 1048576);
+		D.decryptText(tmp2, tmp);
+		out.write((const char*)tmp, 1048576);
 		delete[] tmp;
 	}
 	in.close();

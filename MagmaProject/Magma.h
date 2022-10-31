@@ -7,10 +7,23 @@
 union halfVector { //half 4 byte vector
 	uint8_t bytes[sizeof(uint32_t)]; //bytes
 	uint32_t vector;
+	halfVector() {
+
+	}
+	halfVector(uint32_t& src) {
+		vector = src;
+	}
 };
 
 struct byteVector { //8 byte vector
 	halfVector left, right; //right and left halfs of 8 byte vector
+	byteVector() {
+
+	}
+	byteVector(halfVector& left, halfVector& right) {
+		this->left = left;
+		this->right = right;
+	}
 };
 
 class Magma {
@@ -25,10 +38,10 @@ class Magma {
 			{ 1,7,14,13,0,5,8,3,4,15,10,6,9,12,11,2 }
 	};
 	uint8_t key[32];
-	halfVector* roundKeys;
+	halfVector roundKeys[32];
 public:
 	Magma(uint8_t* key);
-	halfVector* expandKeys(); //function for expanding keys
+	void expandKeys(halfVector* dest); //function for expanding keys
 	halfVector xOR(halfVector& src1, halfVector& src2); //function for xor 
 	halfVector mod32(halfVector& src, halfVector& key); //function for mod32
 	halfVector transformationT(halfVector& src); //function for T-transformation
@@ -37,9 +50,9 @@ public:
 	byteVector transformationG(byteVector& src, halfVector& key); //function for G-transformation
 
 	
-	byteVector encryptBlock(byteVector&src, halfVector*roundKeys); //function for encrypt one block
-	byteVector decryptBlock(byteVector& src, halfVector* roundKeys); //function for decrypt one block
+	byteVector encryptBlock(byteVector&src); //function for encrypt one block
+	byteVector decryptBlock(byteVector& src); //function for decrypt one block
 
-	uint8_t* encryptText(uint8_t* data); //need remake
-	uint8_t* decryptText(uint8_t* data); //need remake
+	void encryptText(uint8_t* data, char* dest); //need remake
+	void decryptText(uint8_t* data, char* dest); //need remake
 };
