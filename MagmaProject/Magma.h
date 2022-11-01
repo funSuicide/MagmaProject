@@ -7,7 +7,7 @@ union halfVector { //half 4 byte vector
 	halfVector() {
 
 	}
-	halfVector(uint32_t& src) {
+	halfVector(uint32_t src) {
 		vector = src;
 	}
 };
@@ -23,6 +23,10 @@ struct byteVector { //8 byte vector
 	}
 };
 
+struct key {
+	uint8_t bytes[32];
+};
+
 class Magma {
 	static constexpr unsigned int tTable[8][16] = { //table for T-transformation
 			{ 12,4,6,2,10,5,11,9,14,8,13,7,0,3,15,1 },
@@ -34,17 +38,18 @@ class Magma {
 			{ 8,14,2,5,6,9,1,12,15,4,11,0,13,10,3,7 },
 			{ 1,7,14,13,0,5,8,3,4,15,10,6,9,12,11,2 }
 	};
-	uint8_t key[32];
+
+	void expandKeys(key& key); //function for expanding keys
 	halfVector roundKeys[32];
 public:
-	Magma(uint8_t* key);
-	void expandKeys(halfVector* dest); //function for expanding keys
-	halfVector xOR(halfVector& src1, halfVector& src2); //function for xor 
-	halfVector mod32(halfVector& src, halfVector& key); //function for mod32
-	halfVector transformationT(halfVector& src); //function for T-transformation
+	Magma(key& key);
 	
-	halfVector gTransformation(halfVector& key, halfVector& half); //function for g-transformation
-	byteVector transformationG(byteVector& src, halfVector& key); //function for G-transformation
+	halfVector xOR(halfVector& src1, halfVector& src2) const; //function for xor 
+	halfVector mod32(halfVector& src, halfVector& key) const; //function for mod32
+	halfVector transformationT(halfVector& src) const; //function for T-transformation
+	
+	halfVector gTransformation(halfVector& key, halfVector& half) const; //function for g-transformation
+	byteVector transformationG(byteVector& src, halfVector& key) const; //function for G-transformation
 
 	
 	byteVector encryptBlock(byteVector&src); //function for encrypt one block

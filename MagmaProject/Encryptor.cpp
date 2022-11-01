@@ -7,7 +7,7 @@ Encryptor::Encryptor(std::string& pathOne, std::string& pathTwo, std::string& pa
 	this->pathTwo = pathTwo;
 	this->pathKey = pathKey;
 }
-
+/*
 void Encryptor::encrypt() const {
 	char tmpKey[32];
 	std::ifstream key(pathKey, std::ios::binary);
@@ -60,3 +60,4 @@ void Encryptor::decrypt() const {
 	in.close();
 	out.close();
 }
+*/
