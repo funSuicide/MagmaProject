@@ -1,8 +1,5 @@
-#include <string>
-#include <vector>
 #include <stdint.h>
 #include <inttypes.h>
-#include <fstream>
 
 union halfVector { //half 4 byte vector
 	uint8_t bytes[sizeof(uint32_t)]; //bytes

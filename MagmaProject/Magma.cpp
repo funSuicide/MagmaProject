@@ -1,8 +1,5 @@
 #include "Magma.h"
 #include <iostream>
-#include <cmath>
-#include <algorithm>
-#include <fstream>
 #include <omp.h>
 
 Magma::Magma(uint8_t* key) {
@@ -63,11 +60,9 @@ halfVector Magma::gTransformation(halfVector& key, halfVector& half) {
 }
 
 byteVector Magma::transformationG(byteVector& src, halfVector& key) {
-	halfVector l = src.left;
-	halfVector r = src.right;
-	halfVector gResult = gTransformation(key, l);
-	halfVector tmp = xOR(gResult, r);
-	return byteVector(tmp, l);
+	halfVector gResult = gTransformation(key, src.left);
+	halfVector tmp = xOR(gResult, src.right);
+	return byteVector(tmp, src.left);
 }
 
 byteVector Magma::encryptBlock(byteVector& src) { 
@@ -75,11 +70,9 @@ byteVector Magma::encryptBlock(byteVector& src) {
 	for (int i = 0; i < 31; i++) {
 		tmp = transformationG(tmp, roundKeys[i]);
 	}
-	halfVector l = tmp.left;
-	halfVector r = tmp.right;
-	halfVector gResult = gTransformation(roundKeys[31], l);
-	halfVector tmp2 = xOR(gResult, r);
-	return byteVector(l, tmp2);
+	halfVector gResult = gTransformation(roundKeys[31], tmp.left);
+	halfVector tmp2 = xOR(gResult, tmp.right);
+	return byteVector(tmp.left, tmp2);
 }
 
 byteVector Magma::decryptBlock(byteVector& src) { 
@@ -87,15 +80,13 @@ byteVector Magma::decryptBlock(byteVector& src) {
 	for (int i = 31; i > 0; i--) {
 		tmp = transformationG(tmp, roundKeys[i]);
 	}
-	halfVector l = tmp.left;
-	halfVector r = tmp.right;
-	halfVector gResult = gTransformation(roundKeys[0], l);
-	halfVector tmp2 = xOR(gResult, r);
-	return byteVector(l, tmp2);
+	halfVector gResult = gTransformation(roundKeys[0], tmp.left);
+	halfVector tmp2 = xOR(gResult, tmp.right);
+	return byteVector(tmp.left, tmp2);
 }
 
 void Magma::encryptText(uint8_t* data, char* dest, int size) {
-	#pragma omp parallel for num_threads(8)
+	#pragma omp parallel for num_threads(4)
 	for (int i = 0; i < size; i+=8){
 		halfVector left;
 		halfVector right;

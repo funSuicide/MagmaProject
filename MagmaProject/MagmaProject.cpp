@@ -1,7 +1,5 @@
 ﻿#include <iostream>
 #include <stdint.h>
-#include <bitset>
-#include <vector>
 #include <string>
 #include "Magma.h"
 #include <chrono>
